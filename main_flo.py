@@ -30,23 +30,11 @@ def cplexsolve():
         for i in range(nb_tasks)
     ]
 
-    jobs = [
-        model.integer_var_dict(
-            ["B", "C"],
-            min=1,
-            name="job_" + str(i),
-        )
-        for i in range(nb_jobs)
-    ]
-
     # CONSTRAINTS
 
     model.add(task["m"] <= nb_machines for task in tasks)
     model.add(task["o"] <= nb_operateurs for task in tasks)
-    model.add(task["B"] <= 100 for task in tasks)
-
-    model.add(job["B"] <= job["C"] for job in jobs)
-    model.add(job["C"] <= nb_tasks for job in jobs)
+    model.add(task["B"] <= 50 for task in tasks)
 
     # CONSTRAINT 4 ET 5
     for job in data_jobs:
