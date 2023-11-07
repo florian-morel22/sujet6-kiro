@@ -8,11 +8,22 @@ with open("./tiny.json") as f:
 
 parameters = data["parameters"]
 jobs = data["jobs"]
-tasks = data["tasks"]
+data_tasks = data["tasks"]
 
 
 def cplexsolve():
-    print("solve model")
+    # MODEL
+    model = CpoModel(name="sujet6-kiro")
+
+    # VARIABLES
+    tasks = [
+        model.integer_var_dict(
+            ["B", "m", "o"],
+            min=0,
+            name="task_" + str(i),
+        )
+        for i in range(len(data_tasks))
+    ]
 
 
-cplexsolve()
+res = cplexsolve()
