@@ -27,13 +27,15 @@ def cplexsolve():
 
     # CONSTRAINTS
 
-    model.add(tasks[i]["B"] <= 10 for i in range(len(data_tasks)))
+    model.add(sum(tasks[i]["B"] for i in range(len(data_tasks))) <= 10)
 
     # OBJECTIVE
 
     # SOLVE
 
     res = model.solve(TimeLimit=10)
+
+    return res
 
 
 res = cplexsolve()
