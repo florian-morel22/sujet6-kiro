@@ -3,7 +3,7 @@ import json
 from docplex.cp.model import *
 
 
-with open("./sujet/tiny.json") as f:
+with open("./sujet/medium.json") as f:
     data = json.load(f)
 
 parameters = data["parameters"]
@@ -35,6 +35,18 @@ def cplexsolve():
     model.add(task["m"] <= nb_machines for task in tasks)
     model.add(task["o"] <= nb_operateurs for task in tasks)
     model.add(task["B"] <= 50 for task in tasks)
+
+    # CONSTRAINT machine et opérateur
+
+    for i, task in enumerate(tasks):
+        model.add(
+            sum(
+                (mach["machine"] == task["m"])
+                * sum((op == task["o"]) for op in mach["operators"])
+                for mach in data_tasks[i]["machines"]
+            )
+            == 1
+        )
 
     # CONSTRAINT 4 ET 5
     for job in data_jobs:
