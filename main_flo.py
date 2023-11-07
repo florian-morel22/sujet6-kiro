@@ -27,7 +27,9 @@ def cplexsolve():
 
     # CONSTRAINTS
 
-    model.add(sum(tasks[i]["B"] for i in range(len(data_tasks))) <= 10)
+    model.add(sum(task["B"] for task in tasks) <= 10)
+    model.add(task["m"] == 1 for task in tasks)
+    model.add(task["o"] == 1 for task in tasks)
 
     # OBJECTIVE
 
@@ -38,14 +40,14 @@ def cplexsolve():
     # PRINT
 
     if res:
-        for i, task in enumerate(tasks):
+        for i, _ in enumerate(tasks):
+            task_job = -1
+            for job in jobs:
+                if i in job["sequence"]:
+                    task_job = job["job"]
             print(
-                "task_"
-                + str(i)
-                + " : "
-                + str(res[tasks[i]["B"]])
-                + ", "
-                + str(res[tasks[i]["m"]])
-                + ", "
-                + str(res[tasks[i]["B"]])
+                f"La task {i} (job {task_job}) commence à {res[tasks[i]['B']]} et est effectué par l'opérateur {res[tasks[i]['o']]} sur la machine {res[tasks[i]['m']]}"
             )
+
+
+cplexsolve()
