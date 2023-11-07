@@ -48,6 +48,10 @@ def cplexsolve():
     model.add(job["B"] <= job["C"] for job in jobs)
     model.add(job["C"] <= nb_tasks for job in jobs)
 
+    for job in data_jobs:
+        rj = job["release_date"]
+        model.add(tasks[job["sequence"][0]]["B"] == rj)
+
     # OBJECTIVE
 
     # SOLVE
