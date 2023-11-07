@@ -7,7 +7,7 @@ with open("./tiny.json") as f:
     data = json.load(f)
 
 parameters = data["parameters"]
-jobs = data["jobs"]
+data_jobs = data["jobs"]
 data_tasks = data["tasks"]
 
 
@@ -23,6 +23,15 @@ def cplexsolve():
             name="task_" + str(i),
         )
         for i in range(len(data_tasks))
+    ]
+
+    jobs = [
+        model.integer_var_dict(
+            ["B", "C"],
+            min=0,
+            name="job_" + str(i),
+        )
+        for i in range(len(data_jobs))
     ]
 
     # CONSTRAINTS
@@ -42,7 +51,7 @@ def cplexsolve():
     if res:
         for i, _ in enumerate(tasks):
             task_job = -1
-            for job in jobs:
+            for job in data_jobs:
                 if i in job["sequence"]:
                     task_job = job["job"]
             print(
