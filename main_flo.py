@@ -43,7 +43,7 @@ def cplexsolve():
 
     model.add(task["m"] <= nb_machines for task in tasks)
     model.add(task["o"] <= nb_operateurs for task in tasks)
-    model.add(task["B"] <= 50 for task in tasks)
+    model.add(task["B"] <= 100 for task in tasks)
 
     model.add(job["B"] <= job["C"] for job in jobs)
     model.add(job["C"] <= nb_tasks for job in jobs)
@@ -61,6 +61,19 @@ def cplexsolve():
                 >= tasks[job["sequence"][i] - 1]["B"]
                 + data_tasks[job["sequence"][i] - 1]["processing_time"]
             )
+
+    # CONSTRAINT 7
+
+    for i, ip in zip(range(nb_tasks), range(nb_tasks)):
+        if i == ip:
+            continue
+        model.add(
+            if_then(
+                (tasks[i]["m"] == tasks[ip]["m"]) | (tasks[i]["o"] == tasks[ip]["o"]),
+                (tasks[ip]["B"] < tasks[i]["B"])
+                | (tasks[i]["B"] + data_tasks[i]["processing_time"] < tasks[ip]["B"]),
+            )
+        )
 
     # OBJECTIVE
 
