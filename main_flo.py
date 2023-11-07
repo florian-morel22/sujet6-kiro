@@ -88,9 +88,8 @@ def cplexsolve():
             print(f"Job {job['job']} (rj = {job['release_date']})")
             for i in job["sequence"]:
                 print(
-                    f" -- La task {i} commence à {res[tasks[i-1]['B']]} et termine à {res[tasks[i-1]['B']] + data_tasks[i-1]['processing_time']}"
+                    f" -- La task {i} commence à {res[tasks[i-1]['B']]} et termine à {res[tasks[i-1]['B']] + data_tasks[i-1]['processing_time']}. Machine {res[tasks[i-1]['m']]} est utilisé par l'opérateur {res[tasks[i-1]['o']]}"
                 )
-        # et est effectué par l'opérateur {res[tasks[i]['o']]} sur la machine {res[tasks[i]['m']]}"
 
         # for i, _ in enumerate(tasks):
         #     task_job = -1
