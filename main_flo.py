@@ -35,7 +35,17 @@ def cplexsolve():
 
     res = model.solve(TimeLimit=10)
 
-    return res
+    # PRINT
 
-
-res = cplexsolve()
+    if res:
+        for i, task in enumerate(tasks):
+            print(
+                "task_"
+                + str(i)
+                + " : "
+                + str(res[tasks[i]["B"]])
+                + ", "
+                + str(res[tasks[i]["m"]])
+                + ", "
+                + str(res[tasks[i]["B"]])
+            )
