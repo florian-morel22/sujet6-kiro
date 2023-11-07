@@ -3,7 +3,7 @@ import json
 from docplex.cp.model import *
 
 
-with open("./sujet/medium.json") as f:
+with open("./sujet/tiny.json") as f:
     data = json.load(f)
 
 parameters = data["parameters"]
@@ -15,6 +15,24 @@ nb_operateurs = parameters["size"]["nb_operators"]
 nb_tasks = parameters["size"]["nb_tasks"]
 nb_jobs = parameters["size"]["nb_jobs"]
 
+alpha = parameters["costs"]["unit_penalty"]
+beta = parameters["costs"]["tardiness"]
+
+
+def cost_function(tasks):
+    res = 0
+    for j in data_jobs:
+        last_task = j["sequence"][-1]
+        dj = j["due_date"]
+        wj = j["weight"]
+
+        Cj = tasks[last_task - 1]["B"] + data_tasks[last_task - 1]["processing_time"]
+        Uj = Cj > dj
+        Tj = max(0, Cj - dj)
+
+        res += wj * (Cj + alpha * Uj + beta * Tj)
+    return res
+
 
 def cplexsolve():
     # MODEL
@@ -24,7 +42,6 @@ def cplexsolve():
     tasks = [
         model.integer_var_dict(
             ["B", "m", "o"],
-            min=1,
             name="task_" + str(i),
         )
         for i in range(nb_tasks)
@@ -33,8 +50,11 @@ def cplexsolve():
     # CONSTRAINTS
 
     model.add(task["m"] <= nb_machines for task in tasks)
+    model.add(1 <= task["m"] for task in tasks)
     model.add(task["o"] <= nb_operateurs for task in tasks)
+    model.add(1 <= task["o"] for task in tasks)
     model.add(task["B"] <= 50 for task in tasks)
+    model.add(0 <= task["B"] for task in tasks)
 
     # CONSTRAINT machine et opérateur
 
@@ -64,18 +84,20 @@ def cplexsolve():
 
     # CONSTRAINT 7
 
-    for i, ip in zip(range(nb_tasks), range(nb_tasks)):
+    for i, ip in [(i, ip) for i in range(nb_tasks) for ip in range(nb_tasks)]:
         if i == ip:
             continue
         model.add(
             if_then(
                 (tasks[i]["m"] == tasks[ip]["m"]) | (tasks[i]["o"] == tasks[ip]["o"]),
                 (tasks[ip]["B"] < tasks[i]["B"])
-                | (tasks[i]["B"] + data_tasks[i]["processing_time"] < tasks[ip]["B"]),
+                | (tasks[i]["B"] + data_tasks[i]["processing_time"] <= tasks[ip]["B"]),
             )
         )
 
     # OBJECTIVE
+
+    model.minimize(cost_function(tasks))
 
     # SOLVE
 
