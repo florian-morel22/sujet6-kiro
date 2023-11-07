@@ -3,7 +3,7 @@ import json
 from docplex.cp.model import *
 
 
-with open("./tiny.json") as f:
+with open("./sujet/tiny.json") as f:
     data = json.load(f)
 
 parameters = data["parameters"]
@@ -19,7 +19,7 @@ def cplexsolve():
     tasks = [
         model.integer_var_dict(
             ["B", "m", "o"],
-            min=0,
+            min=1,
             name="task_" + str(i),
         )
         for i in range(len(data_tasks))
@@ -28,7 +28,7 @@ def cplexsolve():
     jobs = [
         model.integer_var_dict(
             ["B", "C"],
-            min=0,
+            min=1,
             name="job_" + str(i),
         )
         for i in range(len(data_jobs))
