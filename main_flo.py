@@ -10,6 +10,11 @@ parameters = data["parameters"]
 data_jobs = data["jobs"]
 data_tasks = data["tasks"]
 
+nb_machines = parameters["size"]["nb_machines"]
+nb_operateurs = parameters["size"]["nb_operators"]
+nb_tasks = parameters["size"]["nb_tasks"]
+nb_jobs = parameters["size"]["nb_jobs"]
+
 
 def cplexsolve():
     # MODEL
@@ -22,7 +27,7 @@ def cplexsolve():
             min=1,
             name="task_" + str(i),
         )
-        for i in range(len(data_tasks))
+        for i in range(nb_tasks)
     ]
 
     jobs = [
@@ -31,14 +36,17 @@ def cplexsolve():
             min=1,
             name="job_" + str(i),
         )
-        for i in range(len(data_jobs))
+        for i in range(nb_jobs)
     ]
 
     # CONSTRAINTS
 
-    model.add(sum(task["B"] for task in tasks) <= 10)
-    model.add(task["m"] == 1 for task in tasks)
-    model.add(task["o"] == 1 for task in tasks)
+    model.add(task["m"] <= nb_machines for task in tasks)
+    model.add(task["o"] <= nb_operateurs for task in tasks)
+    model.add(task["B"] <= nb_tasks for task in tasks)
+
+    model.add(job["B"] <= job["C"] for job in jobs)
+    model.add(job["C"] <= nb_tasks for job in jobs)
 
     # OBJECTIVE
 
