@@ -53,7 +53,6 @@ def cplexsolve():
     model.add(1 <= task["m"] for task in tasks)
     model.add(task["o"] <= nb_operateurs for task in tasks)
     model.add(1 <= task["o"] for task in tasks)
-    model.add(task["B"] <= 50 for task in tasks)
     model.add(0 <= task["B"] for task in tasks)
 
     # CONSTRAINT machine et opérateur
@@ -97,11 +96,10 @@ def cplexsolve():
 
     # OBJECTIVE
 
-    model.minimize(cost_function(tasks))
+    # model.minimize(cost_function(tasks))
 
     # SOLVE
-
-    res = model.solve(TimeLimit=10)
+    res = model.solve(TimeLimit=300)
 
     # PRINT
 
