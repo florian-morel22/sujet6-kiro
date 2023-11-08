@@ -101,11 +101,7 @@ def cplexsolve():
     # model.minimize(cost_function(tasks))
 
     # SOLVE
-    res = model.solve(
-        TimeLimit=300,
-        agent="local",
-        execfile="/home/m/morel/cpoptimizer/bin/x86-64_linux/cpoptimizer",
-    )
+    res = model.solve(TimeLimit=300)
 
     # PRINT
 
